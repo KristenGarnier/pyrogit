@@ -4,10 +4,9 @@ import {
 	TextAttributes,
 } from "@opentui/core";
 import { createRoot } from "@opentui/react";
-import { useCallback, useState } from "react";
-import { TextRenderable, type TextareaRenderable } from "@opentui/core";
-import { useKeyboard, useRenderer } from "@opentui/react";
-import { useEffect, useRef } from "react";
+import { useState } from "react";
+import { useKeyboard } from "@opentui/react";
+import { useRef } from "react";
 
 function App() {
 	const inputRef = useRef<InputRenderable>(null);
@@ -32,7 +31,7 @@ function App() {
 				}}
 			>
 				<box style={{ border: true, height: 3 }}>
-					<input placeholder="Enter username..." onInput={setValue} focused />
+					<input placeholder="Filter" onInput={setValue} focused />
 				</box>
 
 				<box flexDirection="row">
