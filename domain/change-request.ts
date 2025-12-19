@@ -21,6 +21,7 @@ export type ChangeRequest = {
 	id: ChangeRequestId;
 
 	title: string;
+	taget: string;
 	author: UserRef;
 
 	state: CRState;
