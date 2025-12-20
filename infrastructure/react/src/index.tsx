@@ -10,6 +10,7 @@ import { useChangeRequestStore } from "./stores/changeRequest.store";
 import { useLoadingStore } from "./stores/loading";
 import { useTabFocus } from "./stores/tab.focus.store";
 import { useToastStore } from "./stores/toast.store";
+import { isAction } from "./utils/key-mapper";
 
 const Pyro = new Pyrogit();
 
@@ -52,7 +53,7 @@ function App() {
 	]);
 
 	useKeyboard((key) => {
-		if (key.name === "tab") {
+		if (isAction(key.name, "tab")) {
 			tabFocusStore.cycle();
 		}
 	});

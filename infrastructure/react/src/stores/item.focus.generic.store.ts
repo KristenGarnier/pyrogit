@@ -1,6 +1,7 @@
 import { create } from "zustand";
+import type { YDirectionsActions } from "../utils/key-mapper";
 
-type Direction = "up" | "down";
+type Direction = YDirectionsActions;
 
 export type ListFocusState<T> = {
 	current: { index: number; data: T } | undefined;

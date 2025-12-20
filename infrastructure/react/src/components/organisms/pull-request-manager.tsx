@@ -6,6 +6,11 @@ import { catppuccinMochaTheme } from "../../themes/captuccin-mocha";
 import { calculateColumnWidths } from "../../utils/column-width-calculator";
 import { PullRequestItem } from "../molecules/pull-request-item";
 import { PullRequestTableHeader } from "../molecules/pull-request-table-header";
+import {
+	isAction,
+	matchKey,
+	type YDirectionsActions,
+} from "../../utils/key-mapper";
 
 export function PullRequestManager() {
 	const pullRequestStore = useChangeRequestStore();
@@ -15,19 +20,16 @@ export function PullRequestManager() {
 
 	useKeyboard((key) => {
 		if (tabFocusStore.current !== Tabs.PULL_REQUESTS) return;
-		const wantedEvents = ["up", "down", "return", "escape"];
-		if (!wantedEvents.includes(key.name)) return;
 
-		if (key.name === "return") {
+		if (isAction(key.name, "return")) {
 			if (!itemFocusStore.current) return;
 			tabFocusStore.focusCustom(String(itemFocusStore.current?.data.id.number));
 			return;
 		}
 
-		itemFocusStore.next(
-			key.name as "up" | "down",
-			pullRequestStore.getFilteredPRs(),
-		);
+		if (isAction(key.name, "up") || isAction(key.name, "down")) {
+			itemFocusStore.next(matchKey(key.name) as YDirectionsActions, prs);
+		}
 	});
 
 	const widths = calculateColumnWidths(prs);

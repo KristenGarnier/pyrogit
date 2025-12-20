@@ -2,6 +2,11 @@ import { useKeyboard } from "@opentui/react";
 import { useScopedStore } from "../../hooks/use-scoped-store";
 import { useTabFocus } from "../../stores/tab.focus.store";
 import { catppuccinMochaTheme } from "../../themes/captuccin-mocha";
+import {
+	isAction,
+	matchKey,
+	type YDirectionsActions,
+} from "../../utils/key-mapper";
 
 export type ContextMenuOption = {
 	id: string;
@@ -21,20 +26,21 @@ export function ContextMenu({ id, options }: ContextMenuProps) {
 
 	useKeyboard((key) => {
 		if (tabFocusStore.current !== id) return;
-		const wantedEvents = ["up", "down", "escape", "return"];
-		if (!wantedEvents.includes(key.name)) return;
 
-		if (key.name === "escape") {
+		if (isAction(key.name, "escape")) {
 			tabFocusStore.stopCustom();
 			return;
 		}
 
-		if (key.name === "return" && !key.repeated) {
+		if (isAction(key.name, "return")) {
 			itemFocusStore.current?.data.onSelect();
 			return;
 		}
 
-		itemFocusStore.next(key.name as "up" | "down", options);
+		if (isAction(key.name, "up") || isAction(key.name, "down")) {
+			itemFocusStore.next(matchKey(key.name) as YDirectionsActions, options);
+			return;
+		}
 	});
 
 	return (
