@@ -59,13 +59,10 @@ function App() {
 
 	return (
 		<Layout>
-			<LoadManager />
-			{!loadingStore.isLoading && (
-				<box flexDirection="row">
-					<ViewRequestManager />
-					<PullRequestManager />
-				</box>
-			)}
+			<box flexDirection="row">
+				<ViewRequestManager />
+				<PullRequestManager />
+			</box>
 		</Layout>
 	);
 }

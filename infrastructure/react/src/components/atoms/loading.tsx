@@ -15,7 +15,15 @@ export function LoadingScreen(props: { title?: string; subtitle?: string }) {
 	const frame = frames[i];
 
 	return (
-		<box width="100%" height="100%" alignItems="center" justifyContent="center">
+		<box
+			width="100%"
+			height="100%"
+			alignItems="center"
+			justifyContent="center"
+			position="absolute"
+			top={0}
+			left={0}
+		>
 			<box border padding={2} width={40} flexDirection="column" gap={1}>
 				<text>{`${frame} ${title}...`}</text>
 				{subtitle ? (
