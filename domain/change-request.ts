@@ -22,6 +22,7 @@ export type ChangeRequest = {
 
 	title: string;
 	taget: string;
+	branch: string;
 	author: UserRef;
 
 	state: CRState;

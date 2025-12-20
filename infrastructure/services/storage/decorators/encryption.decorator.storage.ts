@@ -1,7 +1,7 @@
 import * as crypto from "node:crypto";
-import type { Storage } from "../storage.interface";
-import type { EncryptionKeyManager } from "../key-manager.storage";
 import type { ErrorValue } from "../../../react/src/services/pyrogit";
+import type { EncryptionKeyManager } from "../key-manager.storage";
+import type { Storage } from "../storage.interface";
 
 type Payload = {
 	key: string; // encrypted AES key (base64)

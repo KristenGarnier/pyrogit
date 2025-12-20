@@ -1,4 +1,4 @@
-import { InputRenderable, TextAttributes } from "@opentui/core";
+import { type InputRenderable, TextAttributes } from "@opentui/core";
 import { useKeyboard } from "@opentui/react";
 import { useRef, useState } from "react";
 

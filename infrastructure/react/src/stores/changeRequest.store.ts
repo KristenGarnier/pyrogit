@@ -1,9 +1,9 @@
+import path from "node:path";
 import { create } from "zustand";
-import type { ChangeRequest } from "../../../../domain/change-request";
 import { createJSONStorage, persist } from "zustand/middleware";
+import type { ChangeRequest } from "../../../../domain/change-request";
 import { FileStorage } from "../../../services/storage/file.storage";
 import { AppDirectories } from "../../../services/storage/locator.storage";
-import path from "node:path";
 
 const directory = new AppDirectories("pyrogit");
 const storage = new FileStorage(
@@ -68,7 +68,7 @@ export const useChangeRequestStore = create<ChangeRequestStore>()(
 			getFilteredPRs: () => {
 				const { prs } = get();
 
-				return prs.filter((pr) => {
+				return prs.filter((_pr) => {
 					return true;
 				});
 			},
@@ -76,16 +76,16 @@ export const useChangeRequestStore = create<ChangeRequestStore>()(
 		{
 			name: "pr-persistor",
 			storage: createJSONStorage(() => ({
-				async getItem(name: string) {
+				async getItem(_name: string) {
 					const [prs, error] = await storage.read();
 					if (error || !prs) return "{}";
 
 					return prs;
 				},
-				async setItem(name: string, value: string) {
+				async setItem(_name: string, value: string) {
 					await storage.write(value);
 				},
-				async removeItem(name: string) {
+				async removeItem(_name: string) {
 					await storage.write("");
 				},
 			})),

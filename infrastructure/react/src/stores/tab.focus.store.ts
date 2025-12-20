@@ -1,9 +1,12 @@
 import { create } from "zustand";
 
 type TabFocusState = {
-	current: TabValue;
+	current: TabValue | (string & {});
+	previous: TabValue | (string & {});
 
 	cycle: () => void;
+	focusCustom: (name: string) => void;
+	stopCustom: () => void;
 	reset: () => void;
 };
 
@@ -14,17 +17,32 @@ export const Tabs = {
 
 export type TabValue = (typeof Tabs)[keyof typeof Tabs];
 
-const TAB_VALUES = [Tabs.PULL_REQUESTS, Tabs.VIEWS];
+export const TAB_VALUES = [Tabs.PULL_REQUESTS, Tabs.VIEWS];
 
 const initalFocus = Tabs.PULL_REQUESTS;
 
 export const useTabFocus = create<TabFocusState>((set) => ({
 	current: initalFocus,
+	previous: initalFocus,
 
 	cycle: () =>
-		set((state) => ({
-			current: getNextTab(state.current, initalFocus),
-		})),
+		set((state) => {
+			if (!TAB_VALUES.includes(state.current as TabValue)) return state;
+			return {
+				current: getNextTab(state.current as TabValue, initalFocus),
+				previous: state.current,
+			};
+		}),
+
+	focusCustom: (name: string) =>
+		set((state) => {
+			return { current: name, previous: state.current };
+		}),
+
+	stopCustom: () =>
+		set((state) => {
+			return { current: state.previous, previous: state.current };
+		}),
 
 	reset: () =>
 		set({

@@ -98,6 +98,7 @@ function mapGitHubPR(
 		title: pr.title,
 		author: { login: pr.user.login },
 		taget: pr.base.ref,
+		branch: pr.head.ref,
 		state: pr.merged_at ? "merged" : pr.state === "closed" ? "closed" : "open",
 		isDraft: Boolean(pr.draft),
 		updatedAt: new Date(pr.updated_at),
