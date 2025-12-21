@@ -4,13 +4,13 @@ import { useChangeRequestStore } from "../../stores/changeRequest.store";
 import { Tabs, useTabFocus } from "../../stores/tab.focus.store";
 import { catppuccinMochaTheme } from "../../themes/captuccin-mocha";
 import { calculateColumnWidths } from "../../utils/column-width-calculator";
-import { PullRequestItem } from "../molecules/pull-request-item";
-import { PullRequestTableHeader } from "../molecules/pull-request-table-header";
 import {
 	isAction,
 	matchKey,
 	type YDirectionsActions,
 } from "../../utils/key-mapper";
+import { PullRequestItem } from "../molecules/pull-request-item";
+import { PullRequestTableHeader } from "../molecules/pull-request-table-header";
 
 export function PullRequestManager() {
 	const pullRequestStore = useChangeRequestStore();

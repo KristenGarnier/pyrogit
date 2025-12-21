@@ -1,9 +1,9 @@
 import { createCliRenderer } from "@opentui/core";
 import { createRoot, useKeyboard, useRenderer } from "@opentui/react";
 import { useEffect } from "react";
+import { ThemeSwitcher } from "./components/molecules/theme-switcher";
 import { Layout } from "./components/organisms/layout";
 import { PullRequestManager } from "./components/organisms/pull-request-manager";
-import { ThemeSwitcher } from "./components/molecules/theme-switcher";
 import { ViewRequestManager } from "./components/organisms/view-request-manager";
 import { Pyrogit } from "./services/pyrogit";
 import { useChangeRequestStore } from "./stores/changeRequest.store";
@@ -61,11 +61,11 @@ function App() {
 	return (
 		<Layout>
 			<box flexDirection="column">
-				<ThemeSwitcher />
 				<box flexDirection="row">
 					<ViewRequestManager />
 					<PullRequestManager />
 				</box>
+				<ThemeSwitcher />
 			</box>
 		</Layout>
 	);
