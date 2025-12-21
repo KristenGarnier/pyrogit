@@ -11,15 +11,17 @@ type Payload = {
 };
 
 export class EncryptedStorage implements Storage<string> {
+	private initPromise: Promise<void>;
 	constructor(
 		private readonly storage: Storage<string>,
 		private readonly keyManager: EncryptionKeyManager,
 	) {
-		keyManager.init();
+		this.initPromise = keyManager.init();
 	}
 
 	async write(content: string): Promise<ErrorValue<boolean>> {
 		try {
+			await this.initPromise;
 			const aesKey = crypto.randomBytes(32);
 			const iv = crypto.randomBytes(12);
 
@@ -43,6 +45,7 @@ export class EncryptedStorage implements Storage<string> {
 	}
 
 	async read(): Promise<ErrorValue<string>> {
+		await this.initPromise;
 		const [raw, err] = await this.storage.read();
 		if (err || !raw) return [null, err ?? new Error("Empty storage")];
 
