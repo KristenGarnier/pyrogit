@@ -10,7 +10,9 @@ import {
 } from "../../../services/storage/locator.storage";
 import type { Storage } from "../../../services/storage/storage.interface";
 
-export type ErrorValue<T> = [result: T | null, error: Error | null];
+export type ErrorValue<T> =
+	| [result: null, error: Error]
+	| [result: T, error: null];
 
 export class Pyrogit {
 	private _pyro: ChangeRequestService | null = null;

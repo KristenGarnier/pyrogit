@@ -40,7 +40,7 @@ export class GitHubChangeRequestRepository implements ChangeRequestRepository {
 
 			out.push(mapGitHubPR(repo, me, pr, reviews.data));
 		}
-		return out;
+		return out ?? [];
 	}
 
 	async getById(id: ChangeRequestId): Promise<ChangeRequest> {

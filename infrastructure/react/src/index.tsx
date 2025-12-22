@@ -1,6 +1,8 @@
 import { createCliRenderer } from "@opentui/core";
 import { createRoot, useKeyboard, useRenderer } from "@opentui/react";
 import { useEffect } from "react";
+import type { ChangeRequestService } from "../../../application/usecases/change-request.service";
+import { TokenInput } from "./components/molecules/token-input";
 import { Layout } from "./components/organisms/layout";
 import { PullRequestManager } from "./components/organisms/pull-request-manager";
 import { ViewRequestManager } from "./components/organisms/view-request-manager";
@@ -8,7 +10,7 @@ import { Pyrogit } from "./services/pyrogit";
 import { useChangeRequestStore } from "./stores/changeRequest.store";
 import { useLoadingStore } from "./stores/loading";
 import { useTabFocus } from "./stores/tab.focus.store";
-import { useToastStore } from "./stores/toast.store";
+import { useToastActions } from "./stores/toast.store";
 import { isAction } from "./utils/key-mapper";
 
 const Pyro = new Pyrogit();
@@ -17,7 +19,7 @@ function App() {
 	const loadingStore = useLoadingStore();
 	const prStore = useChangeRequestStore();
 	const tabFocusStore = useTabFocus();
-	const toastStore = useToastStore();
+	const toast = useToastActions();
 
 	const renderer = useRenderer();
 
@@ -26,29 +28,27 @@ function App() {
 	}, [renderer.console.show]);
 
 	useEffect(() => {
-		loadingStore.start("Loading the app");
-		Pyro.init()
-			.then(([instance, error]) => {
-				if (error) {
-					loadingStore.stop();
-					toastStore.addToast("Failed to initialize app", "error");
-					return;
+		async function run() {
+			loadingStore.start("Loading the app");
+			const [instance, error] = await Pyro.init();
+			if (error) {
+				if (error.message === "No token available") {
+					tabFocusStore.focusCustom("ask-token");
+				} else {
+					toast.error("Failed to initialize app");
 				}
-				loadingStore.stop();
 
-				return instance?.list({});
-			})
-			.then((requests) => {
-				if (!requests) return;
-				prStore.setPRs(requests);
-				toastStore.addToast("Pull requests loaded successfully", "success");
-			})
-			.finally(loadingStore.stop);
+				return;
+			}
+
+			await launch(instance!);
+		}
+		run().finally(loadingStore.stop);
 	}, [
 		loadingStore.stop,
 		loadingStore.start,
-		prStore.setPRs,
-		toastStore.addToast,
+		toast.error,
+		tabFocusStore.focusCustom,
 	]);
 
 	useKeyboard((key) => {
@@ -56,6 +56,25 @@ function App() {
 			tabFocusStore.cycle();
 		}
 	});
+
+	const handleTokenSuccess = (instance: ChangeRequestService) => {
+		(async () => {
+			tabFocusStore.stopCustom();
+			await launch(instance);
+		})();
+	};
+
+	async function launch(instance: ChangeRequestService) {
+		const requests = await instance.list({});
+		prStore.setPRs(requests);
+
+		if (!requests) {
+			toast.info("There are no pull requests to load");
+			return;
+		}
+		toast.success("Pull requests loaded successfully");
+		loadingStore.stop();
+	}
 
 	return (
 		<Layout>
@@ -65,6 +84,9 @@ function App() {
 					<PullRequestManager />
 				</box>
 			</box>
+			{tabFocusStore.current === "ask-token" && (
+				<TokenInput onSuccess={handleTokenSuccess} />
+			)}
 		</Layout>
 	);
 }
