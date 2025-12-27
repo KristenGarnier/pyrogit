@@ -87,9 +87,7 @@ function App() {
 			{tabFocusStore.current === "ask-token" && (
 				<TokenInput onSuccess={handleTokenSuccess} />
 			)}
-			{tabFocusStore.current === "choose-theme" && (
-				<ThemeChooser onSuccess={handleTokenSuccess} />
-			)}
+			{tabFocusStore.current === "choose-theme" && <ThemeChooser />}
 		</Layout>
 	);
 }

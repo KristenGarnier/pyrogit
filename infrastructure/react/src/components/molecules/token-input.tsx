@@ -4,6 +4,7 @@ import { useTheme } from "../../hooks/use-theme";
 import { Pyrogit } from "../../services/pyrogit";
 import { useToastActions } from "../../stores/toast.store";
 import type { ChangeRequestService } from "../../../../../application/usecases/change-request.service";
+import { Modal } from "./modal";
 
 type TokenInputProps = {
 	onSuccess: (instance: ChangeRequestService) => void;
@@ -31,46 +32,25 @@ export function TokenInput({ onSuccess }: TokenInputProps) {
 	}
 
 	return (
-		<box
-			position="absolute"
-			top={0}
-			left={0}
-			flexGrow={1}
-			width={"100%"}
-			height={"100%"}
-			backgroundColor={theme.highlightBg}
-			justifyContent="center"
-			alignItems="center"
-		>
-			<box
-				flexDirection="column"
-				paddingLeft={2}
-				paddingRight={2}
-				paddingTop={1}
-				paddingBottom={1}
-				backgroundColor={theme.background}
-			>
-				<box marginBottom={1}>
-					<text fg={theme.foreground}>🔐 GitHub Token Required</text>
-				</box>
+		<Modal>
+			<Modal.Header
+				title="GitHub Token Required"
+				icon="🔐"
+				description="Please enter your GitHub personal access token to continue."
+			/>
 
-				<box marginBottom={1}>
-					<text fg={theme.muted}>
-						Please enter your GitHub personal access token to continue.
-					</text>
-				</box>
+			<Modal.Content>
+				<input
+					placeholder="Enter token..."
+					value={value}
+					onInput={setValue}
+					onSubmit={submitToken}
+					onPaste={(event) => setValue(event.text)}
+					focused
+				/>
+			</Modal.Content>
 
-				<box marginBottom={1}>
-					<input
-						placeholder="Enter token..."
-						value={value}
-						onInput={setValue}
-						onSubmit={submitToken}
-						onPaste={(event) => setValue(event.text)}
-						focused
-					/>
-				</box>
-
+			<Modal.Content>
 				<box flexDirection="row" gap={1}>
 					{loading && (
 						<text fg={theme.info} attributes={TextAttributes.DIM}>
@@ -78,7 +58,7 @@ export function TokenInput({ onSuccess }: TokenInputProps) {
 						</text>
 					)}
 				</box>
-			</box>
-		</box>
+			</Modal.Content>
+		</Modal>
 	);
 }

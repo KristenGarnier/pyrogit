@@ -10,6 +10,7 @@ import {
 	type YDirectionsActions,
 } from "../../utils/key-mapper";
 import { useToastActions } from "../../stores/toast.store";
+import { Modal } from "./modal";
 
 export function ThemeChooser() {
 	const { theme, themeName } = useTheme();
@@ -50,12 +51,6 @@ export function ThemeChooser() {
 	useKeyboard((key) => {
 		if (tabFocusStore.current !== "choose-theme") return;
 
-		if (isAction(key.name, "escape")) {
-			themeStore.switchToTheme(initialTheme as KeyThemeMap);
-			tabFocusStore.stopCustom();
-			return;
-		}
-
 		if (isAction(key.name, "return")) {
 			itemFocusStore.current?.data.onSelect();
 			return;
@@ -71,56 +66,34 @@ export function ThemeChooser() {
 	});
 
 	return (
-		<box
-			position="absolute"
-			top={0}
-			left={0}
-			flexGrow={1}
-			width={"100%"}
-			height={"100%"}
-			backgroundColor={theme.highlightBg}
-			justifyContent="center"
-			alignItems="center"
+		<Modal
+			onClose={() => {
+				themeStore.switchToTheme(initialTheme as KeyThemeMap);
+				tabFocusStore.stopCustom();
+			}}
 		>
-			<box
-				flexDirection="column"
-				paddingLeft={2}
-				paddingRight={2}
-				paddingTop={1}
-				paddingBottom={1}
-				backgroundColor={theme.background}
-			>
-				<box marginBottom={1}>
-					<text fg={theme.foreground}>Themes</text>
-				</box>
+			<Modal.Header
+				title="Themes"
+				description="Please choose your theme from the themes down below. Preview will be shown while focusing on a theme"
+			/>
 
-				<box marginBottom={1}>
-					<text fg={theme.muted}>
-						Please choose your theme from the themes down below. Preview will be
-						shown while focusing on a theme
-					</text>
-				</box>
-
-				<box>
-					{themesAvailableWithCallback().map((item) => (
-						<box
-							width={"100%"}
-							{...(itemFocusStore.current?.data.name === item.name && {
-								backgroundColor: theme.muted,
-							})}
-							flexDirection="row"
-							paddingLeft={1}
-							paddingRight={1}
-							gap={1}
-							key={item.name}
-						>
-							<text fg={theme.foreground}>{item.name}</text>
-						</box>
-					))}
-				</box>
-
-				<box marginBottom={1}></box>
-			</box>
-		</box>
+			<Modal.Content marginBottom={0}>
+				{themesAvailableWithCallback().map((item) => (
+					<box
+						width={"100%"}
+						{...(itemFocusStore.current?.data.name === item.name && {
+							backgroundColor: theme.muted,
+						})}
+						flexDirection="row"
+						paddingLeft={1}
+						paddingRight={1}
+						gap={1}
+						key={item.name}
+					>
+						<text fg={theme.foreground}>{item.name}</text>
+					</box>
+				))}
+			</Modal.Content>
+		</Modal>
 	);
 }
