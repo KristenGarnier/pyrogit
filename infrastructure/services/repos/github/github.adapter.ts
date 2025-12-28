@@ -29,17 +29,18 @@ export class GitHubChangeRequestRepository implements ChangeRequestRepository {
 			per_page: 100,
 		});
 
-		const out: ChangeRequest[] = [];
-		for (const pr of prs.data) {
-			const reviews = await this.octokit.pulls.listReviews({
-				owner: repo.owner,
-				repo: repo.repo,
-				pull_number: pr.number,
-				per_page: 100,
-			});
+		const out = Promise.all(
+			prs.data.map(async (pr) => {
+				const reviews = await this.octokit.pulls.listReviews({
+					owner: repo.owner,
+					repo: repo.repo,
+					pull_number: pr.number,
+					per_page: 10,
+				});
+				return mapGitHubPR(repo, me, pr, reviews.data);
+			}),
+		);
 
-			out.push(mapGitHubPR(repo, me, pr, reviews.data));
-		}
 		return out ?? [];
 	}
 
