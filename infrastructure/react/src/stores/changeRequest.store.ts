@@ -1,15 +1,14 @@
-import path from "node:path";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import type { ChangeRequest } from "../../../../domain/change-request";
-import { FileStorage } from "../../../services/storage/file.storage";
-import { AppDirectories } from "../../../services/storage/locator.storage";
+import { createSimpleStorage } from "../utils/init-file-storage.utils";
 import { zustandFileStorage } from "../utils/zustand-file-storage.utils";
+import { RootLocator } from "../../../services/locator/locators";
 
-const directory = new AppDirectories("pyrogit");
-const storage = new FileStorage(
-	path.join(directory.getPath("cache"), "prs.enc"),
-);
+const projectPath = new RootLocator().findDir();
+const projectPathName = projectPath
+	? `${projectPath.split("/")[projectPath.split("/").length - 1]}-prs.enc`
+	: "unknown-prs.enc";
 
 interface ChangeRequestStore {
 	prs: ChangeRequest[];
@@ -63,7 +62,11 @@ export const useChangeRequestStore = create<ChangeRequestStore>()(
 		}),
 		{
 			name: "pr-persistor",
-			storage: createJSONStorage(zustandFileStorage(storage)),
+			storage: createJSONStorage(
+				zustandFileStorage(
+					createSimpleStorage("pyrogit", "cache", projectPathName),
+				),
+			),
 		},
 	),
 );

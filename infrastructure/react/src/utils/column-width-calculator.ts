@@ -2,7 +2,7 @@ import type { ChangeRequest } from "../../../../domain/change-request";
 import { getReviewStatusConfig } from "./review-status.utils";
 
 export const COLUMN_CONFIG = {
-	ID: { minWidth: 1, maxWidth: 10 },
+	ID: { minWidth: 2, maxWidth: 10 },
 	Status: { minWidth: 1, maxWidth: 1 },
 	Title: { minWidth: 30, maxWidth: 60 },
 	Author: { minWidth: 15, maxWidth: 25 },
