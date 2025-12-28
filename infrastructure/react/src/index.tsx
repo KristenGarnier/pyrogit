@@ -13,6 +13,7 @@ import { useTabFocus } from "./stores/tab.focus.store";
 import { useToastActions } from "./stores/toast.store";
 import { isAction } from "./utils/key-mapper";
 import { ThemeChooser } from "./components/molecules/theme-chooser";
+import { useUserStore } from "./stores/user.store";
 
 const Pyro = new Pyrogit();
 
@@ -21,6 +22,7 @@ function App() {
 	const prStore = useChangeRequestStore();
 	const tabFocusStore = useTabFocus();
 	const toast = useToastActions();
+	const userStore = useUserStore();
 
 	const renderer = useRenderer();
 
@@ -70,15 +72,29 @@ function App() {
 	};
 
 	async function launch(instance: ChangeRequestService) {
-		const requests = await instance.list({});
-		prStore.setPRs(requests);
+		try {
+			const requests = await instance.list({});
+			prStore.setPRs(requests);
 
-		if (!requests) {
-			toast.info("There are no pull requests to load");
-			return;
+			if (!requests) {
+				toast.info("There are no pull requests to load");
+				return;
+			}
+			toast.success("Pull requests loaded successfully");
+
+			const user = await instance.getUser();
+			if (!user) {
+				toast.error("Could not load user");
+				return;
+			}
+
+			if (userStore.user) return;
+
+			userStore.set(user);
+			toast.success("User loaded successfully");
+		} finally {
+			loadingStore.stop();
 		}
-		toast.success("Pull requests loaded successfully");
-		loadingStore.stop();
 	}
 
 	return (

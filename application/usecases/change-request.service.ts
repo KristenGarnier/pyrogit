@@ -59,4 +59,8 @@ export class ChangeRequestService implements ChangeRequestUseCase {
 		if (!result) throw new Error("Token is not correct");
 		return true;
 	}
+
+	async getUser() {
+		return this.deps.currentUserProvider.getCurrentUser();
+	}
 }

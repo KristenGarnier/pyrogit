@@ -10,6 +10,7 @@ import { throttle } from "../../utils/throttle";
 import { StatusIcon } from "../atoms/status-icon";
 import { ContextMenu, type ContextMenuOption } from "./context-menu";
 import { ReviewStatus } from "./review-status";
+import { useUserStore } from "../../stores/user.store";
 
 interface PullRequestItemProps {
 	item: ChangeRequest;
@@ -25,6 +26,7 @@ export function PullRequestItem({
 	const { theme } = useTheme();
 	const tabFocusStore = useTabFocus();
 	const toastStore = useToastActions();
+	const userStore = useUserStore();
 
 	const menuOptions: ContextMenuOption[] = [
 		{
@@ -78,7 +80,15 @@ export function PullRequestItem({
 
 			{/* Author column */}
 			<box width={widths.Author}>
-				<text fg={theme.foreground}>{item.author.login}</text>
+				<text
+					fg={
+						item.author.login === userStore.user?.login
+							? theme.primary
+							: theme.secondary
+					}
+				>
+					{item.author.login}
+				</text>
 			</box>
 
 			{/* Target column */}
@@ -90,7 +100,7 @@ export function PullRequestItem({
 			<box width={widths.Review} flexDirection="row" gap={1}>
 				<ReviewStatus
 					hasActivity={item.review.hasAnyReviewActivity}
-					statusKind={item.review.myStatus.kind}
+					statusKind={item.review.myStatus}
 				/>
 			</box>
 

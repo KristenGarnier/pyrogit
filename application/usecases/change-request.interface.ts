@@ -1,6 +1,7 @@
 import type {
 	ChangeRequest,
 	ChangeRequestId,
+	UserRef,
 } from "../../domain/change-request";
 import type { ChangeRequestQuery } from "../../domain/change-request-query";
 
@@ -17,4 +18,6 @@ export interface ChangeRequestUseCase {
 	getById(id: ChangeRequestId): Promise<ChangeRequest>;
 
 	checkAuth(): Promise<boolean>;
+
+	getUser(): Promise<UserRef | null>;
 }
