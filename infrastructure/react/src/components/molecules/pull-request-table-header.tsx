@@ -41,6 +41,11 @@ export function PullRequestTableHeader({
 			<box width={widths.Review}>
 				<text fg={theme.muted}>Review</text>
 			</box>
+
+			{/* Update status column */}
+			<box width={widths.Update}>
+				<text fg={theme.muted}>Updated</text>
+			</box>
 		</box>
 	);
 }

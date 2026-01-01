@@ -1,3 +1,4 @@
+import { format } from "timeago.js";
 import type { ChangeRequest } from "../../../../domain/change-request";
 import { getReviewStatusConfig } from "./review-status.utils";
 
@@ -8,6 +9,7 @@ export const COLUMN_CONFIG = {
 	Author: { minWidth: 15, maxWidth: 25 },
 	Target: { minWidth: 6, maxWidth: 18 },
 	Review: { minWidth: 12, maxWidth: 25 },
+	Update: { minWidth: 10, maxWidth: 20 },
 };
 
 export type ColumnKey = keyof typeof COLUMN_CONFIG;
@@ -45,6 +47,9 @@ export function calculateColumnWidths(
 					contentLength = String(status.text + status.icon).length + 3;
 					break;
 				}
+				case "Update":
+					contentLength = format(item.updatedAt).length;
+					break;
 			}
 
 			maxLength = Math.max(maxLength, contentLength);

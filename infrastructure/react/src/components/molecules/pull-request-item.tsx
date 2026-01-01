@@ -11,6 +11,9 @@ import { StatusIcon } from "../atoms/status-icon";
 import { ContextMenu, type ContextMenuOption } from "./context-menu";
 import { ReviewStatus } from "./review-status";
 import { useUserStore } from "../../stores/user.store";
+import { format } from "timeago.js";
+import dayjs from "dayjs";
+import { isRecent } from "../../utils/date.utils";
 
 interface PullRequestItemProps {
 	item: ChangeRequest;
@@ -104,6 +107,13 @@ export function PullRequestItem({
 					hasActivity={item.review.hasAnyReviewActivity}
 					statusKind={item.review.myStatus}
 				/>
+			</box>
+
+			{/* Date column */}
+			<box width={widths.Update}>
+				<text fg={isRecent(item.updatedAt) ? theme.secondary : theme.muted}>
+					{truncateText(format(item.updatedAt), 20)}
+				</text>
 			</box>
 
 			{/* Context menu */}
