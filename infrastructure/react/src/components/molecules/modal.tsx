@@ -23,7 +23,10 @@ function ModalComponent({ children, onClose }: ModalProps) {
 	const { theme } = useTheme();
 
 	useKeyboard((key) => {
-		if (onClose && isAction(key.name, "escape")) {
+		if (
+			onClose &&
+			(isAction(key.name, "escape") || isAction(key.name, "quit"))
+		) {
 			onClose();
 		}
 	});
