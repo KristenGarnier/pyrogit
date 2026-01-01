@@ -93,7 +93,9 @@ export function PullRequestItem({
 
 			{/* Target column */}
 			<box width={widths.Target}>
-				<text fg={theme.foreground}>{item.taget}</text>
+				<text fg={theme.foreground}>
+					{truncateText(item.taget, widths.Target)}
+				</text>
 			</box>
 
 			{/* Review status column */}

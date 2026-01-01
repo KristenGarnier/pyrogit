@@ -4,7 +4,7 @@ import { getReviewStatusConfig } from "./review-status.utils";
 export const COLUMN_CONFIG = {
 	ID: { minWidth: 2, maxWidth: 10 },
 	Status: { minWidth: 1, maxWidth: 1 },
-	Title: { minWidth: 30, maxWidth: 60 },
+	Title: { minWidth: 10, maxWidth: 30 },
 	Author: { minWidth: 15, maxWidth: 25 },
 	Target: { minWidth: 6, maxWidth: 18 },
 	Review: { minWidth: 12, maxWidth: 25 },
