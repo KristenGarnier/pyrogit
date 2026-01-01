@@ -14,8 +14,13 @@ export const keyDefintion = {
 	...xDirection,
 	...yDirections,
 	return: ["return"],
-	escape: ["escape", "q"],
+	escape: ["escape"],
+	opening: ["o"],
+	quit: ["q"],
+	copy: ["c"],
+	refresh: ["r"],
 	tab: ["tab"],
+	help: ["?"],
 };
 
 export type SupportedActions = keyof typeof keyDefintion;
@@ -43,6 +48,7 @@ export function isAction(
 	key: string,
 	action: SupportedActions | SupportedActions[],
 ): boolean {
+	console.log(keyMap);
 	const foundAction = matchKey(key);
 	if (Array.isArray(action))
 		return action.includes(foundAction as SupportedActions);

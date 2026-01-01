@@ -28,6 +28,10 @@ const helpShortcuts = [
 			},
 			{ keys: ["?"], action: "Open help", context: "Global" },
 			{ keys: ["t"], action: "Open themes", context: "Global" },
+			{ keys: ["c"], action: "Copy branch name", context: "Pr list" },
+			{ keys: ["o"], action: "Open in browser", context: "Pr list" },
+			{ keys: ["r"], action: "Refresh pr list", context: "Global" },
+			{ keys: ["q"], action: "Close pyrogit", context: "Global" },
 		],
 	},
 ];

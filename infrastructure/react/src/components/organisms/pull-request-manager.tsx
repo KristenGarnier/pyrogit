@@ -11,11 +11,16 @@ import {
 } from "../../utils/key-mapper";
 import { PullRequestItem } from "../molecules/pull-request-item";
 import { PullRequestTableHeader } from "../molecules/pull-request-table-header";
+import { throttle } from "../../utils/throttle";
+import open from "open";
+import { useToastActions } from "../../stores/toast.store";
+import clipboard from "clipboardy";
 
 export function PullRequestManager() {
 	const pullRequestStore = useChangeRequestStore();
 	const tabFocusStore = useTabFocus();
 	const itemFocusStore = useChangeRequestFocusStore();
+	const toastActions = useToastActions();
 	const prs = pullRequestStore.getPRs();
 
 	useKeyboard((key) => {
@@ -29,6 +34,24 @@ export function PullRequestManager() {
 
 		if (isAction(key.name, "up") || isAction(key.name, "down")) {
 			itemFocusStore.next(matchKey(key.name) as YDirectionsActions, prs);
+		}
+
+		if (isAction(key.name, "opening")) {
+			const url = itemFocusStore.current?.data.webUrl;
+			if (!url) return toastActions.error("Could not open PR : url not found");
+
+			void open(url);
+		}
+
+		if (isAction(key.name, "copy")) {
+			const branch = itemFocusStore.current?.data.branch;
+			if (!branch)
+				return toastActions.error(
+					"Could not copy the branch name : branch not found",
+				);
+
+			void clipboard.write(branch);
+			toastActions.info("Branch name copied to clipboard");
 		}
 	});
 
