@@ -35,6 +35,7 @@ export function ContextMenu({ id, options }: ContextMenuProps) {
 
 		if (isAction(key.name, "return")) {
 			itemFocusStore.current?.data.onSelect();
+			tabFocusStore.stopCustom();
 			return;
 		}
 
