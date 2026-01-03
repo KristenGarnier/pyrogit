@@ -5,8 +5,44 @@ on:
     types: [published, prereleased]
 
 jobs:
+  test:
+    name: Run Tests and Quality Checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: bun-${{ hashFiles('**/bun.lock') }}
+          restore-keys: |
+            bun-
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Run tests
+        run: bun test
+
+      - name: Run tests with coverage
+        run: bun test --coverage
+
+      - name: Run linting
+        run: bunx @biomejs/biome check .
+
+      - name: Security audit
+        run: bun audit
+
   build:
     name: Build for ${{ matrix.os }}-${{ matrix.arch }}
+    needs: test
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -33,6 +69,14 @@ jobs:
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: bun-${{ hashFiles('**/bun.lock') }}
+          restore-keys: |
+            bun-
 
       - name: Install dependencies
         run: bun install --frozen-lockfile
