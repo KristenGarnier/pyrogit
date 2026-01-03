@@ -11,10 +11,11 @@ import {
 } from "../../utils/key-mapper";
 import { PullRequestItem } from "../molecules/pull-request-item";
 import { PullRequestTableHeader } from "../molecules/pull-request-table-header";
+import { useAutoScroll } from "../../hooks/use-auto-scroll";
 import open from "open";
 import { useToastActions } from "../../stores/toast.store";
 import clipboard from "clipboardy";
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import type { ScrollBoxRenderable } from "@opentui/core";
 
 export function PullRequestManager() {
@@ -26,6 +27,8 @@ export function PullRequestManager() {
 	const prs = pullRequestStore.getPRs();
 
 	const { height } = useTerminalDimensions();
+
+	useAutoScroll(scrollRef, height, itemFocusStore.current?.index, prs.length);
 
 	useKeyboard((key) => {
 		if (tabFocusStore.current !== Tabs.PULL_REQUESTS) return;
@@ -58,27 +61,6 @@ export function PullRequestManager() {
 			toastActions.info("Branch name copied to clipboard");
 		}
 	});
-
-	useEffect(() => {
-		if (
-			!scrollRef.current ||
-			(!itemFocusStore.current?.index && itemFocusStore.current?.index !== 0)
-		)
-			return;
-
-		const lowBound = Math.floor((height - 4) / 2);
-		const highBound = prss.length - lowBound;
-		const totalHeight = prs.length;
-		const scrollPos = itemFocusStore.current.index;
-
-		if (scrollPos < lowBound) return scrollRef.current.scrollTo(0);
-		if (scrollPos > highBound) return scrollRef.current.scrollTo(totalHeight);
-
-		if (Math.floor((height - 4) / 2) < itemFocusStore.current.index)
-			scrollRef.current.scrollTo(
-				itemFocusStore.current?.index - Math.floor((height - 4) / 2),
-			);
-	}, [itemFocusStore.current?.index, height]);
 
 	const widths = calculateColumnWidths(prs);
 
