@@ -18,13 +18,14 @@ export function GhLogin({ onSuccess }: GhLoginProps) {
 	async function login() {
 		setLoading(true);
 		const pyro = new Pyrogit();
-		const [initError, instance] = await pyro.init();
-		if (initError) {
+		const initResult = await pyro.init();
+		if (initResult.isErr()) {
 			setLoading(false);
-			toast.error(initError.message);
+			toast.error(initResult.error.message);
 			return;
 		}
 
+		const instance = initResult.value;
 		toast.success("Login successful");
 		setLoading(false);
 		onSuccess(instance as ChangeRequestService);

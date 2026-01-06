@@ -1,10 +1,7 @@
 import type { ChangeRequestService } from "../../../../application/usecases/change-request.service";
 import { init } from "../../../app/app";
 import { GhAuthService } from "../../../services/ghauth.service";
-
-export type ErrorValue<T> =
-	| [error: Error, result: null]
-	| [error: null, result: T];
+import { Result, ok, err } from "neverthrow";
 
 export class Pyrogit {
 	private _pyro: ChangeRequestService | null = null;
@@ -15,31 +12,32 @@ export class Pyrogit {
 		this.ghauth = new GhAuthService();
 	}
 
-	get pyro(): ErrorValue<ChangeRequestService> {
-		if (!this._pyro) return [new Error("Pyro not yet initialized"), null];
-		return [null, this._pyro];
+	get pyro(): Result<ChangeRequestService, Error> {
+		if (!this._pyro) return err(new Error("Pyro not yet initialized"));
+		return ok(this._pyro);
 	}
 
-	get isInit(): ErrorValue<typeof this._isInit> {
-		return [null, this._isInit];
+	get isInit(): Result<boolean, Error> {
+		return ok(this._isInit);
 	}
 
-	async init(): Promise<ErrorValue<typeof this._pyro>> {
+	async init(): Promise<Result<ChangeRequestService, Error>> {
 		try {
-			const [error, token] = await this.ghauth.getValidToken();
-			if (error) {
-				return [error, null];
+			const tokenResult = await this.ghauth.getValidToken();
+			if (tokenResult.isErr()) {
+				return err(tokenResult.error);
 			}
 
-			this._pyro = init(token!);
+			const token = tokenResult.value;
+			this._pyro = init(token);
 			await this._pyro.checkAuth();
 
-			return [null, this._pyro];
+			return ok(this._pyro!);
 		} catch (error: unknown) {
-			let err = new Error("Unspecified Error");
-			if (!(error instanceof Error)) err = new Error(String(error));
+			let e = new Error("Unspecified Error");
+			if (!(error instanceof Error)) e = new Error(String(error));
 
-			return [error instanceof Error ? error : err, null];
+			return err(error instanceof Error ? error : e);
 		}
 	}
 }

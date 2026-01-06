@@ -24,21 +24,22 @@ function App() {
 	const toast = useToastActions();
 	const userStore = useUserStore();
 
-	const renderer = useRenderer();
 	const [instanceCRService, setCRServiceInstance] = useState<
 		ChangeRequestService | undefined
 	>();
 
-	useEffect(() => {
-		renderer.console.show();
-	}, [renderer.console.show]);
+	// const renderer = useRenderer();
+	// useEffect(() => {
+	// 	renderer.console.show();
+	// }, [renderer.console.show]);
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: I do not need launch dependency it changes every render
 	useEffect(() => {
 		async function run() {
 			loadingStore.start("Loading the app");
-			const [error, instance] = await Pyro.init();
-			if (error) {
+			const initResult = await Pyro.init();
+			if (initResult.isErr()) {
+				const error = initResult.error;
 				if (error.message.includes("No stored OAuth token")) {
 					tabFocusStore.focusCustom("ask-login");
 				} else {
@@ -48,7 +49,8 @@ function App() {
 				return;
 			}
 
-			await launch(instance!);
+			const instance = initResult.value;
+			await launch(instance);
 		}
 		run().finally(loadingStore.stop);
 	}, [

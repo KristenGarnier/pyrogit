@@ -1,42 +1,37 @@
 import { execSync } from "child_process";
-
-type ErrorValue<T> = [error: Error | null, result: T | null];
+import { Result, ok, err } from "neverthrow";
 
 export class GhAuthService {
-	async login(): Promise<ErrorValue<string>> {
+	async login(): Promise<Result<string, Error>> {
 		try {
 			const existingToken = await this.getTokenFromGh();
 			if (existingToken) {
-				return [null, existingToken];
+				return ok(existingToken);
 			}
 
 			console.log(
 				"Please run 'gh auth login' in another terminal to authenticate with GitHub.",
 			);
 			console.log("Then come back and try again.");
-			return [
-				new Error("Please authenticate with 'gh auth login' first."),
-				null,
-			];
+			return err(new Error("Please authenticate with 'gh auth login' first."));
 		} catch (error) {
-			const err = error instanceof Error ? error : new Error(String(error));
-			return [err, null];
+			const e = error instanceof Error ? error : new Error(String(error));
+			return err(e);
 		}
 	}
 
-	async getValidToken(): Promise<ErrorValue<string>> {
+	async getValidToken(): Promise<Result<string, Error>> {
 		try {
 			const token = await this.getTokenFromGh();
 			if (token) {
-				return [null, token];
+				return ok(token);
 			}
-			return [
+			return err(
 				new Error("No GitHub token found. Please run 'gh auth login'."),
-				null,
-			];
+			);
 		} catch (error) {
-			const err = error instanceof Error ? error : new Error(String(error));
-			return [err, null];
+			const e = error instanceof Error ? error : new Error(String(error));
+			return err(e);
 		}
 	}
 

@@ -1,6 +1,6 @@
-import type { ErrorValue } from "../../react/src/services/pyrogit";
+import { Result } from "neverthrow";
 
 export interface Storage<T> {
-	read(): Promise<ErrorValue<T>>;
-	write(content: T): Promise<ErrorValue<boolean>>;
+	read(): Promise<Result<T, Error>>;
+	write(content: T): Promise<Result<boolean, Error>>;
 }
