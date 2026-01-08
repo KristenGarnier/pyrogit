@@ -1,5 +1,6 @@
 import type { ChangeRequestService } from "../../../../application/usecases/change-request.service";
 import { init } from "../../../app/app";
+import type { GHTokenRetrievalError } from "../../../errors/GHTokenRetrievalError";
 import { GhAuthService } from "../../../services/ghauth.service";
 import { Result, ok, err } from "neverthrow";
 
@@ -21,7 +22,9 @@ export class Pyrogit {
 		return ok(this._isInit);
 	}
 
-	async init(): Promise<Result<ChangeRequestService, Error>> {
+	async init(): Promise<
+		Result<ChangeRequestService, GHTokenRetrievalError | Error>
+	> {
 		try {
 			const tokenResult = await this.ghauth.getValidToken();
 			if (tokenResult.isErr()) {

@@ -1,46 +1,27 @@
-import { execSync } from "child_process";
-import { Result, ok, err } from "neverthrow";
+import { execSync } from "node:child_process";
+import { err, ok, type Result } from "neverthrow";
+import { GHTokenRetrievalError } from "../errors/GHTokenRetrievalError";
 
 export class GhAuthService {
-	async login(): Promise<Result<string, Error>> {
-		try {
-			const existingToken = await this.getTokenFromGh();
-			if (existingToken) {
-				return ok(existingToken);
-			}
-
-			console.log(
-				"Please run 'gh auth login' in another terminal to authenticate with GitHub.",
-			);
-			console.log("Then come back and try again.");
-			return err(new Error("Please authenticate with 'gh auth login' first."));
-		} catch (error) {
-			const e = error instanceof Error ? error : new Error(String(error));
-			return err(e);
+	async getValidToken(): Promise<Result<string, GHTokenRetrievalError>> {
+		const token = await this.getTokenFromGh();
+		if (token.isOk()) {
+			return ok(token.value);
 		}
+		return err(
+			new GHTokenRetrievalError(
+				"No GitHub token found. Please run 'gh auth login'.",
+			),
+		);
 	}
 
-	async getValidToken(): Promise<Result<string, Error>> {
-		try {
-			const token = await this.getTokenFromGh();
-			if (token) {
-				return ok(token);
-			}
-			return err(
-				new Error("No GitHub token found. Please run 'gh auth login'."),
-			);
-		} catch (error) {
-			const e = error instanceof Error ? error : new Error(String(error));
-			return err(e);
-		}
-	}
-
-	private async getTokenFromGh(): Promise<string | null> {
+	private async getTokenFromGh(): Promise<Result<string, Error>> {
 		try {
 			const token = execSync("gh auth token", { encoding: "utf8" }).trim();
-			return token || null;
-		} catch {
-			return null;
+			return ok(token);
+		} catch (error) {
+			const e = error instanceof Error ? error : new Error(String(error));
+			return err(e);
 		}
 	}
 }

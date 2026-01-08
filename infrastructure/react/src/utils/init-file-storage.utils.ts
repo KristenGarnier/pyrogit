@@ -2,7 +2,7 @@ import path from "node:path";
 import { FileStorage } from "../../../services/storage/file.storage";
 import {
 	AppDirectories,
-	AppDirUsage,
+	type AppDirUsage,
 } from "../../../services/storage/locator.storage";
 
 export function createSimpleStorage(

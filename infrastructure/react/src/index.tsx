@@ -14,6 +14,8 @@ import { useTabFocus } from "./stores/tab.focus.store";
 import { useToastActions } from "./stores/toast.store";
 import { useUserStore } from "./stores/user.store";
 import { isAction } from "./utils/key-mapper";
+import { isTaggedError } from "../../errors/TaggedError";
+import { GH_TOKEN_ERROR } from "../../errors/GHTokenRetrievalError";
 
 const Pyro = new Pyrogit();
 
@@ -28,10 +30,10 @@ function App() {
 		ChangeRequestService | undefined
 	>();
 
-	// const renderer = useRenderer();
-	// useEffect(() => {
-	// 	renderer.console.show();
-	// }, [renderer.console.show]);
+	const renderer = useRenderer();
+	useEffect(() => {
+		renderer.console.show();
+	}, [renderer.console.show]);
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: I do not need launch dependency it changes every render
 	useEffect(() => {
@@ -40,8 +42,9 @@ function App() {
 			const initResult = await Pyro.init();
 			if (initResult.isErr()) {
 				const error = initResult.error;
-				if (error.message.includes("No stored OAuth token")) {
+				if (isTaggedError(error) && error._tag === GH_TOKEN_ERROR) {
 					tabFocusStore.focusCustom("ask-login");
+					toast.error("Failed to log the user");
 				} else {
 					toast.error("Failed to initialize app");
 				}
