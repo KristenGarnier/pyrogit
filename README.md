@@ -12,10 +12,10 @@
 ```
 
 **A beautiful Terminal User Interface for managing GitHub Pull Requests**
+**Anger coded this because managing team reviews in GitHub's UI, is amazing (cough)**
 
 [![Tests](https://github.com/KristenGarnier/Pyrogit/actions/workflows/test.yaml/badge.svg)](https://github.com/KristenGarnier/Pyrogit/actions/workflows/test.yaml)
 [![Build & Release](https://github.com/KristenGarnier/Pyrogit/actions/workflows/build.yaml/badge.svg)](https://github.com/KristenGarnier/Pyrogit/actions/workflows/build.yaml)
-[![Test Coverage](https://img.shields.io/badge/coverage-97.04%25-brightgreen.svg)](https://github.com/KristenGarnier/Pyrogit/actions/workflows/test.yaml)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Bun](https://img.shields.io/badge/runtime-Bun-orange.svg)](https://bun.sh)
 
