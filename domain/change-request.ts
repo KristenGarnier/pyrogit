@@ -22,7 +22,10 @@ export type MyReviewStatus =
 	| { kind: "not_needed" }
 	| { kind: "needed" }
 	| { kind: "done"; decision: "approved" | "changes_requested" | "commented" }
-	| { kind: "as_author"; overallStatus: OverallStatus }
+	| {
+			kind: "as_author";
+			decision: "approved" | "changes_requested" | "commented";
+	  }
 	| { kind: "unknown" };
 
 export type ChangeRequest = {

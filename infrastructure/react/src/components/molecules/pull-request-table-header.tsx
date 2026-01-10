@@ -37,6 +37,11 @@ export function PullRequestTableHeader({
 				<text fg={theme.muted}>Target</text>
 			</box>
 
+			{/* MR column */}
+			<box width={widths.MR}>
+				<text fg={theme.muted}></text>
+			</box>
+
 			{/* Review status column */}
 			<box width={widths.Review}>
 				<text fg={theme.muted}>Review</text>

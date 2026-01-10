@@ -8,6 +8,7 @@ export const COLUMN_CONFIG = {
 	Title: { minWidth: 10, maxWidth: 30 },
 	Author: { minWidth: 15, maxWidth: 25 },
 	Target: { minWidth: 6, maxWidth: 18 },
+	MR: { minWidth: 1, maxWidth: 1 },
 	Review: { minWidth: 12, maxWidth: 25 },
 	Update: { minWidth: 10, maxWidth: 20 },
 };
@@ -40,7 +41,10 @@ export function calculateColumnWidths(
 					contentLength = item.author.login.length;
 					break;
 				case "Target":
-					contentLength = item.taget.length;
+					contentLength = item.taget?.length || 0;
+					break;
+				case "MR":
+					contentLength = 1;
 					break;
 				case "Review": {
 					const status = getReviewStatusConfig(item.review.myStatus);

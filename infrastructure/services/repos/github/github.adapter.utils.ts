@@ -33,11 +33,8 @@ export function computeMyStatus(
 	overallStatus: OverallStatus,
 	meLogin: string | undefined,
 ): MyReviewStatus {
-	if (isMyPR) {
-		return { kind: "as_author", overallStatus };
-	}
 	if (myLatest) {
-		return { kind: "done", decision: myLatest };
+		return { kind: "as_author", decision: myLatest };
 	}
 	if (
 		meLogin &&

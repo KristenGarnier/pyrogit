@@ -7,6 +7,7 @@ import { useToastActions } from "../../stores/toast.store";
 import type { ColumnKey } from "../../utils/column-width-calculator";
 import { truncateText } from "../../utils/column-width-calculator";
 import { throttle } from "../../utils/throttle";
+import { getReviewStatusConfig } from "../../utils/review-status.utils";
 import { StatusIcon } from "../atoms/status-icon";
 import { ContextMenu, type ContextMenuOption } from "./context-menu";
 import { ReviewStatus } from "./review-status";
@@ -99,6 +100,22 @@ export function PullRequestItem({
 				<text fg={theme.foreground}>
 					{truncateText(item.taget, widths.Target)}
 				</text>
+			</box>
+
+			{/* MR column */}
+			<box width={widths.MR}>
+				{item.review.myStatus.kind === "as_author" && (
+					<text
+						fg={
+							theme[
+								getReviewStatusConfig(item.review.myStatus)
+									.color as keyof typeof theme
+							]
+						}
+					>
+						{getReviewStatusConfig(item.review.myStatus).icon}
+					</text>
+				)}
 			</box>
 
 			{/* Review status column */}
