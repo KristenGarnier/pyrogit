@@ -186,14 +186,13 @@ export class GitHubChangeRequestRepository implements ChangeRequestRepository {
 		);
 
 		const activeReviews = reviews.filter((r) => r.state !== "DISMISSED");
-		const overallStatus = computeOverallStatus(activeReviews, requested);
+		const overallStatus = computeOverallStatus(activeReviews);
 		const hasComments = Boolean(reviews.some((r) => r.state === "COMMENTED"));
 		const hasAnyReviewActivity: boolean =
 			overallStatus !== "none" || hasComments;
 
 		const myStatus = computeMyStatus(
 			myLatest,
-			isMyPR,
 			requested,
 			overallStatus,
 			meLogin,

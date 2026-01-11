@@ -7,34 +7,86 @@ import type {
 type Reviews =
 	RestEndpointMethodTypes["pulls"]["listReviews"]["response"]["data"];
 
-export function computeOverallStatus(
-	activeReviews: Reviews,
-	requested: string[],
-): OverallStatus {
-	if (activeReviews.some((r) => r.state === "CHANGES_REQUESTED")) {
-		return "changes_requested";
-	}
-	if (activeReviews.some((r) => r.state === "APPROVED")) {
-		return "approved";
-	}
-	if (activeReviews.some((r) => r.state === "COMMENTED")) {
-		return "commented_only";
-	}
-	if (requested.length > 0) {
+export function computeOverallStatus(activeReviews: Reviews): OverallStatus {
+	if (activeReviews.length === 0) {
 		return "pending";
 	}
-	return "none";
+
+	const personReview = new Map<string, Reviews>();
+	for (const activeReview of activeReviews) {
+		const login = activeReview.user?.login ?? "unknown";
+		const person = personReview.get(login);
+
+		if (!person) {
+			personReview.set(login, [activeReview]);
+			continue;
+		}
+
+		personReview.set(login, person.concat([activeReview]));
+	}
+
+	const entries = personReview.entries();
+	const reviewsArray: Reviews = [];
+	function precedence(name: string): number {
+		switch (name) {
+			case "APPROVED":
+				return 10;
+			case "CHANGES_REQUESTED":
+				return 10;
+			default:
+				return 0;
+		}
+	}
+	for (const [_, reviews] of entries) {
+		const sorted = reviews.sort(
+			(a, b) =>
+				new Date(a.submitted_at ?? 0).getTime() -
+				new Date(b.submitted_at ?? 0).getTime(),
+		);
+		const reviewState = sorted.reduce((previous, current) => {
+			if (precedence(current.state) >= precedence(previous.state))
+				return current;
+			return previous;
+		});
+
+		reviewsArray.push(reviewState);
+	}
+
+	const reviewsSorted = reviewsArray.sort(
+		(a, b) =>
+			new Date(a.submitted_at ?? 0).getTime() -
+			new Date(b.submitted_at ?? 0).getTime(),
+	);
+
+	const finalState = reviewsSorted.reduce((previous, current) => {
+		if (precedence(current.state) >= precedence(previous.state)) return current;
+		return previous;
+	});
+
+	function stateTransformer(state: string): OverallStatus {
+		switch (state) {
+			case "CHANGES_REQUESTED":
+				return "changes_requested";
+			case "APPROVED":
+				return "approved";
+			case "COMMENTED":
+				return "commented_only";
+			default:
+				return "none";
+		}
+	}
+
+	return stateTransformer(finalState.state);
 }
 
 export function computeMyStatus(
 	myLatest: "approved" | "changes_requested" | "commented" | undefined,
-	isMyPR: boolean,
 	requested: string[],
 	overallStatus: OverallStatus,
 	meLogin: string | undefined,
 ): MyReviewStatus {
 	if (myLatest) {
-		return { kind: "done", decision: myLatest };
+		return { kind: "as_author", decision: myLatest };
 	}
 	if (
 		meLogin &&

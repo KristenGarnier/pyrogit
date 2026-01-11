@@ -18,7 +18,7 @@ exports[`GitHubChangeRequestRepository list should return change requests for op
     "isMyPR": false,
     "myStatus": {
       "decision": "commented",
-      "kind": "done",
+      "kind": "as_author",
     },
     "overallStatus": "approved",
   },
@@ -48,7 +48,7 @@ exports[`GitHubChangeRequestRepository getById should return change request by I
     "isMyPR": false,
     "myStatus": {
       "decision": "commented",
-      "kind": "done",
+      "kind": "as_author",
     },
     "overallStatus": "approved",
   },

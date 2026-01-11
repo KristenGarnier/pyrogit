@@ -47,8 +47,12 @@ export function calculateColumnWidths(
 					contentLength = 1;
 					break;
 				case "Review": {
-					const status = getReviewStatusConfig(item.review.myStatus);
-					contentLength = String(status.text + status.icon).length + 3;
+					const status = getReviewStatusConfig(
+						item.review.overallStatus,
+						item.review.myStatus,
+					);
+					// account for space between icon and text
+					contentLength = String(status.text + status.icon).length + 1;
 					break;
 				}
 				case "Update":

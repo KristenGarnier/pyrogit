@@ -12,6 +12,7 @@
 ```
 
 **A beautiful Terminal User Interface for managing GitHub Pull Requests**
+
 **Anger coded this because managing team reviews in GitHub's UI, is amazing (cough)**
 
 [![Tests](https://github.com/KristenGarnier/Pyrogit/actions/workflows/test.yaml/badge.svg)](https://github.com/KristenGarnier/Pyrogit/actions/workflows/test.yaml)
