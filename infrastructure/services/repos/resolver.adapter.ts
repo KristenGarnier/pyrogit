@@ -1,7 +1,10 @@
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
+import { err, ok, ResultAsync, type Result } from "neverthrow";
 import type { RepoRef } from "../../../application/ports/change-request.repository";
 import type { RepoResolver } from "../../../application/ports/project.resolver";
+import { RemoteCMDError } from "../../errors/RemoteCMDError";
+import { RemoteNoResultError } from "../../errors/RemoteNoResultError";
 
 const execFileAsync = promisify(execFile);
 
@@ -15,29 +18,36 @@ const execFileAsync = promisify(execFile);
 export class GitRemoteRepoResolver implements RepoResolver {
 	constructor(
 		private readonly opts: {
-			cwd?: string; // dossier du projet
-			remoteName?: string; // par défaut "origin"
-			preferHttps?: boolean; // si plusieurs remotes matchent
+			cwd?: string;
+			remoteName?: string;
+			preferHttps?: boolean;
 		} = {},
 	) {}
 
-	async resolveCurrentRepo(): Promise<RepoRef> {
+	async resolveCurrentRepo(): Promise<
+		Result<RepoRef, RemoteCMDError | RemoteNoResultError>
+	> {
 		const cwd = this.opts.cwd;
 
-		const { stdout } = await execFileAsync("git", ["remote", "-v"], { cwd });
-		const candidates = parseGitRemoteV(stdout);
+		const result = await ResultAsync.fromPromise(
+			execFileAsync("git", ["remote", "-v"], { cwd }),
+			(error) =>
+				new RemoteCMDError(
+					"Could not get the remote from the current directory",
+					{ cause: error },
+				),
+		);
+		if (result.isErr()) return err(result.error);
+
+		const candidates = parseGitRemoteV(result.value.stdout);
 
 		const remoteName = this.opts.remoteName ?? "origin";
 
-		// 1) on prend d'abord le remoteName (origin) si possible
 		const fromPreferredRemote = candidates.filter(
 			(c) => c.remote === remoteName,
 		);
-
-		// 2) sinon on prend tout
 		const pool = fromPreferredRemote.length ? fromPreferredRemote : candidates;
 
-		// 3) on garde uniquement github.com
 		const github = pool
 			.map((c) => ({ ...c, repo: parseGitHubRepoFromRemoteUrl(c.url) }))
 			.filter((x) => x.repo !== null) as Array<{
@@ -48,20 +58,19 @@ export class GitRemoteRepoResolver implements RepoResolver {
 		}>;
 
 		if (!github[0]) {
-			throw new Error(
-				`Impossible de détecter un repo GitHub depuis "git remote -v". ` +
-					`Vérifie que tu es dans un repo git et que le remote pointe vers github.com.`,
+			return err(
+				new RemoteNoResultError(
+					"Cannot dectect user from command, are you sure you are in a git repo ?",
+				),
 			);
 		}
 
-		// Optionnel : préférer HTTPS si demandé
 		if (this.opts.preferHttps) {
 			const https = github.find((x) => x.url.startsWith("https://"));
-			if (https) return https.repo;
+			if (https) return ok(https.repo);
 		}
 
-		// Sinon: premier match stable
-		return github[0].repo;
+		return ok(github[0].repo);
 	}
 }
 

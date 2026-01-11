@@ -18,7 +18,9 @@ export class ChangeRequestService implements ChangeRequestUseCase {
 	constructor(private readonly deps: Deps) {}
 
 	async list(query: ChangeRequestQuery): Promise<ChangeRequest[]> {
-		const repo = await this.deps.repoResolver.resolveCurrentRepo();
+		const repoResult = await this.deps.repoResolver.resolveCurrentRepo();
+		if (repoResult.isErr()) throw repoResult.error;
+		const repo = repoResult.value;
 		const me = await this.deps.currentUserProvider.getCurrentUser();
 
 		const itemsResult = await this.deps.repository.list(repo, query);
