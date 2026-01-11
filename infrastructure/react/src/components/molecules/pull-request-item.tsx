@@ -15,6 +15,7 @@ import { StatusIcon } from "../atoms/status-icon";
 import { ContextMenu, type ContextMenuOption } from "./context-menu";
 import { ReviewStatus } from "./review-status";
 import { useUserStore } from "../../stores/user.store";
+import { getAuthorColor } from "../../utils/author-color.utils";
 import { format } from "timeago.js";
 import dayjs from "dayjs";
 import { isRecent } from "../../utils/date.utils";
@@ -91,7 +92,7 @@ export function PullRequestItem({
 					fg={
 						item.author.login === userStore.user?.login
 							? theme.primary
-							: theme.secondary
+							: getAuthorColor(item.author.login, theme)
 					}
 				>
 					{item.author.login}
