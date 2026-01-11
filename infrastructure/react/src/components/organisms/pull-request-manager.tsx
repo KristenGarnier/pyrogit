@@ -34,6 +34,7 @@ export function PullRequestManager() {
 			minMatchCharLength: 2,
 			keys: [
 				{ name: "title", weight: 0.55 },
+				{ name: "id.number", weight: 0.3 },
 				{ name: "id.owner", weight: 0.1 },
 				{ name: "id.repo", weight: 0.12 },
 				{ name: "author.login", weight: 0.12 },
