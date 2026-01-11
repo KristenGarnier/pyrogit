@@ -68,6 +68,12 @@ export function PullRequestManager() {
 	useKeyboard((key) => {
 		if (tabFocusStore.current !== Tabs.PULL_REQUESTS) return;
 
+		if (filter !== "" && isAction(key.name, "escape")) {
+			if (searchMode) setSearchMode(false);
+			setFilter("");
+			toastActions.info("Search cleared");
+			tabFocusStore.enable();
+		}
 		if (searchMode) {
 			if (isAction(key.name, "escape")) {
 				if (searchMode) setSearchMode(false);
